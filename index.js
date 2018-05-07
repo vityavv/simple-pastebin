@@ -16,10 +16,15 @@ function serverFunc(req, res) {
 				res.end(index);
 			});
 		} else {
-			db.get("SELECT data FROM pastes WHERE id = $id LIMIT 1", {$id: req.url.substring(1)}, (err, paste) => {
+			db.get("SELECT data FROM pastes WHERE id = $id LIMIT 1", {$id: req.url.substring(1).split(".")[0]}, (err, paste) => {
 				if (err) throw err;
-				if (paste) res.end(paste.data);
-				else {
+				if (paste) {
+					fs.readFile("./paste.html", "utf8", (err, file) => {
+						if (err) throw err;
+						res.writeHead(200, {"Content-Type": "text/html"});
+						res.end(file.replace("{{PASTE}}", paste.data).replace("{{LANG}}", req.url.split(".")[1]));
+					})
+				} else {
 					res.writeHead(404, "404 Not Found");
 					res.end("404 Not Found");
 				}
