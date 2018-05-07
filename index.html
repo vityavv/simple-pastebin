@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Victor's Paste</title>
+	<style>
+	html, body {
+		width: 100%;
+		height: 100%;
+	}
+	textarea {
+		font-family: monospace;
+		width: 100%;
+		height: 80%;
+	}
+	</style>
+	<script>
+	function submit() {
+		fetch(location, {method: "POST", body: document.getElementById("paste").value}).then(r => r.text()).then(r => location = r);
+	}
+	</script>
+</head>
+<body>
+	<h1>This is Victor's Pastebin</h1>
+	<p>You may have seen many others like it, but this one's Victor's. He made it, and he uses it. Horray.</p>
+	<p>You can use the API by submitting a post request to this address. The response will be your URL.</p>
+	<p>Alternatively, you can use this handy-dandy editor:</p>
+	<textarea id="paste"></textarea>
+	<button onClick="submit()">Submit</button>
+</body>
+</html>
