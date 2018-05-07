@@ -9,13 +9,31 @@
 	}
 	textarea {
 		font-family: monospace;
-		width: 100%;
-		height: 80%;
+		font-size: 12pt;
+		width: 90%;
+		height: 60%;
+		tab-size: 2;
 	}
 	</style>
 	<script>
 	function submit() {
-		fetch(location, {method: "POST", body: document.getElementById("paste").value}).then(r => r.text()).then(r => location = r);
+		fetch(location, {
+			method: "POST",
+			body: document.getElementById("paste").value
+		}).then(r => r.text()).then(r => location = r);
+	}
+	/* I FOUND THE FOLLOWING CODE IN A JS FIDDLE. I HAVE STRIPPED IT OF ITS COMMENTS. IF YOU WANT TO SEE THE ORIGINAL, FOLLOW THIS LINK: http://jsfiddle.net/2wAzx/13/ */
+	window.onload = function() {
+		document.getElementById("paste").onkeydown = function(e) {
+			if (e.keyCode === 9) {
+				let val = this.value,
+				start = this.selectionStart,
+				end = this.selectionEnd;
+				this.value = val.substring(0, start) + '\t' + val.substring(end);
+				this.selectionStart = this.selectionEnd = start + 1;
+				return false;
+			}
+		}
 	}
 	</script>
 </head>
@@ -24,7 +42,7 @@
 	<p>You may have seen many others like it, but this one's Victor's. He made it, and he uses it. Horray.</p>
 	<p>You can use the API by submitting a post request to this address. The response will be your URL.</p>
 	<p>Alternatively, you can use this handy-dandy editor:</p>
-	<textarea id="paste"></textarea>
+	<textarea id="paste"></textarea><br>
 	<button onClick="submit()">Submit</button>
 </body>
 </html>

@@ -1,8 +1,10 @@
 let http = require("http");
 let fs = require("fs");
 let sqlite = require("sqlite3");
+let shortid = require("shortid");
 
 let db = new sqlite.Database("./database.db");
+db.run("CREATE TABLE IF NOT EXISTS pastes (id TEXT UNIQUE PRIMARY KEY, data TEXT)");
 
 http.createServer(serverFunc).listen(8080);
 function serverFunc(req, res) {
@@ -12,6 +14,15 @@ function serverFunc(req, res) {
 				if (err) throw err;
 				res.writeHead(200, {"Content-Type": "text/html"});
 				res.end(index);
+			});
+		} else {
+			db.get("SELECT data FROM pastes WHERE id = $id LIMIT 1", {$id: req.url.substring(1)}, (err, paste) => {
+				if (err) throw err;
+				if (paste) res.end(paste.data);
+				else {
+					res.writeHead(404, "404 Not Found");
+					res.end("404 Not Found");
+				}
 			});
 		}
 	} else if (req.method === "POST") {
@@ -25,8 +36,11 @@ function serverFunc(req, res) {
 				}
 			});
 			req.on("end", () => {
-				console.log(body);
-				res.end();
+				let id = shortid.generate();
+				db.run("INSERT INTO pastes (id, data) VALUES ($id, $data)", {$id: id, $data: body}, err => {
+					if (err) throw err;
+					res.end(`http://localhost:8080/${id}`);
+				});
 			});
 		}
 	}
