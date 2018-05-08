@@ -66,7 +66,7 @@ function serverFunc(req, res) {
 				//Math.floor(Date.now() / 3600000) is number of hours from epoch. Used to calculate expiration
 				db.run("INSERT INTO pastes (id, data, created) VALUES ($id, $data, $created)", {$id: id, $data: body, $created: Math.floor(Date.now() / 3600000)}, err => {
 					if (err) throw err;
-					res.end(`http://localhost:8080/${id}`);//return new URL
+					res.end(`/${id}`);//return new URL
 				});
 			});
 		}
