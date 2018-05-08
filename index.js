@@ -2,11 +2,13 @@ let http = require("http");
 let fs = require("fs");
 let sqlite = require("sqlite3");
 let shortid = require("shortid");
+let hljs = require("highlight.js");
 
 let db = new sqlite.Database("./database.db");
-db.run("CREATE TABLE IF NOT EXISTS pastes (id TEXT UNIQUE PRIMARY KEY, data TEXT)");
-
+db.run("CREATE TABLE IF NOT EXISTS pastes (id TEXT UNIQUE PRIMARY KEY, data TEXT, created INTEGER)");
 http.createServer(serverFunc).listen(8080);
+setInterval(checkIfExpired, 3600000);
+
 function serverFunc(req, res) {
 	if (req.method === "GET") {
 		if (req.url === "/") {
@@ -22,7 +24,9 @@ function serverFunc(req, res) {
 					fs.readFile("./paste.html", "utf8", (err, file) => {
 						if (err) throw err;
 						res.writeHead(200, {"Content-Type": "text/html"});
-						res.end(file.replace("{{PASTE}}", paste.data).replace("{{LANG}}", req.url.split(".")[1]));
+						let highlighted = hljs.highlightAuto(paste.data);
+						try {highlighted = hljs.highlight(req.url.split(".")[1], paste.data);} catch(e) {}//this means no language/undefined language was specified
+						res.end(file.replace("{{PASTE}}", highlighted.value));
 					})
 				} else {
 					res.writeHead(404, "404 Not Found");
@@ -42,11 +46,17 @@ function serverFunc(req, res) {
 			});
 			req.on("end", () => {
 				let id = shortid.generate();
-				db.run("INSERT INTO pastes (id, data) VALUES ($id, $data)", {$id: id, $data: body}, err => {
+				db.run("INSERT INTO pastes (id, data, created) VALUES ($id, $data, $created)", {$id: id, $data: body, $created: Math.floor(Date.now() / 3600000)}, err => {
 					if (err) throw err;
 					res.end(`http://localhost:8080/${id}`);
 				});
 			});
 		}
 	}
+}
+
+function checkIfExpired() {
+	db.run("DELETE FROM pastes WHERE $now - created > 720", {$now: Math.floor(Date.now() / 3600000)}, err => {
+		if (err) throw err;
+	});
 }
