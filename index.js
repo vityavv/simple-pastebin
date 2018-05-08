@@ -1,5 +1,6 @@
 //Native modules (mostly for server)
 let http = require("http");
+let https = require("https");
 let fs = require("fs");
 //Not native modules (db, id creater, syntax highlighting)
 let sqlite = require("sqlite3");
@@ -8,6 +9,7 @@ let hljs = require("highlight.js");
 //Create connection with and set up DB and HTTP server. Start interval that checks for expired pastes
 let db = new sqlite.Database("./database.db");
 db.run("CREATE TABLE IF NOT EXISTS pastes (id TEXT UNIQUE PRIMARY KEY, data TEXT, created INTEGER)");
+https.createServer(serverFunc).listen(8081);
 http.createServer(serverFunc).listen(8080);
 setInterval(checkIfExpired, 3600000);
 
