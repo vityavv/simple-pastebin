@@ -30,6 +30,7 @@ function serverFunc(req, res) {
 				if (paste) {
 					if (req.url.split(".")[1] === "plain") {
 						//serve plain text
+						res.writeHead(200, {"Content-Type": "text/plain"});
 						res.end(paste.data);
 					} else {
 						fs.readFile("./paste.html", "utf8", (err, file) => {
