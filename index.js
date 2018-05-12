@@ -63,7 +63,7 @@ function serverFunc(req, res) {
 			let stop = false;//to stop if req is too large
 			req.on("data", data => {
 				body += data;
-				if (body.length > config.max || 500000) {//500k char max
+				if (body.length > (config.max || 500000)) {//500k char max
 					res.writeHead(413, "Request Entity Too Large");
 					res.end("Request Entity Too Large");
 					stop = true;

@@ -21,6 +21,7 @@
 			method: "POST",
 			body: document.getElementById("paste").value
 		}).then(r => r.text()).then(r => location = r);
+		document.querySelector("button").disabled = true;
 	}
 	/* I FOUND THE FOLLOWING CODE IN A JS FIDDLE. I HAVE STRIPPED IT OF ITS COMMENTS. IF YOU WANT TO SEE THE ORIGINAL, FOLLOW THIS LINK: http://jsfiddle.net/2wAzx/13/ */
 	window.onload = function() {
