@@ -47,7 +47,7 @@ function serverFunc(req, res) {
 							let highlighted = hljs.highlightAuto(paste.data);
 							//hljs errors if language is not recognized. We can use this to try and highlight with specified lang
 							try {highlighted = hljs.highlight(req.url.split(".")[1], paste.data);} catch(e) {}
-							res.end(file.replace("{{PASTE}}", highlighted.value).replace("{{THEME}}", config.theme || "color-brewer");
+							res.end(file.replace("{{PASTE}}", highlighted.value).replace("{{THEME}}", config.theme || "color-brewer"));
 						});
 					}
 				} else {
