@@ -1,0 +1,14 @@
+{
+	"database": "./database.db",
+	"http_port": 80,
+	"https": {
+		"port": 443,
+		"key": "./key.pem",
+		"cert": "./cert.pem"
+	},
+
+	"check": 3600000,
+	"max": 500000,
+	"expiry": 720,
+	"theme": "color-brewer"
+}

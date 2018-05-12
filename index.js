@@ -6,12 +6,19 @@ let fs = require("fs");
 let sqlite = require("sqlite3");
 let shortid = require("shortid");
 let hljs = require("highlight.js");
+//CONFIG!
+let config = require("./config.json");
 //Create connection with and set up DB and HTTP server. Start interval that checks for expired pastes
-let db = new sqlite.Database("./database.db");
+let db = new sqlite.Database(config.database || "./database.db");
 db.run("CREATE TABLE IF NOT EXISTS pastes (id TEXT UNIQUE PRIMARY KEY, data TEXT, created INTEGER)");
-https.createServer(serverFunc).listen(8081);
-http.createServer(serverFunc).listen(8080);
-setInterval(checkIfExpired, 3600000);
+if (config.https) {
+	https.createServer({
+		key: fs.readFileSync(config.https.key || "./key.pem"),
+		cert: fs.readFileSync(config.https.cert || "./cert.pem")
+	}, serverFunc).listen(config.https.port || 443);
+}
+http.createServer(serverFunc).listen(config.http_port || 80);
+if (config.expiry !== 0) setInterval(checkIfExpired, config.check || 3600000);
 
 function serverFunc(req, res) {
 	if (req.method === "GET") {
@@ -40,7 +47,7 @@ function serverFunc(req, res) {
 							let highlighted = hljs.highlightAuto(paste.data);
 							//hljs errors if language is not recognized. We can use this to try and highlight with specified lang
 							try {highlighted = hljs.highlight(req.url.split(".")[1], paste.data);} catch(e) {}
-							res.end(file.replace("{{PASTE}}", highlighted.value));
+							res.end(file.replace("{{PASTE}}", highlighted.value).replace("{{THEME}}", config.theme || "color-brewer");
 						});
 					}
 				} else {
@@ -56,7 +63,7 @@ function serverFunc(req, res) {
 			let stop = false;//to stop if req is too large
 			req.on("data", data => {
 				body += data;
-				if (body.length > 500000) {//500k char max
+				if (body.length > config.max || 500000) {//500k char max
 					res.writeHead(413, "Request Entity Too Large");
 					res.end("Request Entity Too Large");
 					stop = true;
@@ -77,7 +84,7 @@ function serverFunc(req, res) {
 }
 //runs every hour. Checks if pastes are expired.
 function checkIfExpired() {
-	db.run("DELETE FROM pastes WHERE $now - created > 720", {$now: Math.floor(Date.now() / 3600000)}, err => {
+	db.run(`DELETE FROM pastes WHERE $now - created > ${config.expiry || 720}`, {$now: Math.floor(Date.now() / 3600000)}, err => {
 		if (err) throw err;
 	});
 }

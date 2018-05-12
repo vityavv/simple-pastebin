@@ -1,2 +1,5 @@
 node_modules
 database.db
+config.json
+key.pem
+cert.pem
