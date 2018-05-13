@@ -16,15 +16,13 @@
 		height: 60%;
 		tab-size: 2;
 		border-radius: 5px;
-		border-color: #4CAF50;
-		border-width: 2px;
+		border: 2px solid #4CAF50;
+
 	}
 	code {
 		border: 1px solid black;
 		border-radius: 5px;
 		padding: 0px 2px;
-		background: grey;
-		color: white;
 	}
 	#search {
 		margin: 15px 0px 5px 0px;
@@ -32,6 +30,7 @@
 		border-radius: 5px;
 		padding: 5px;
 		width: fit-content;
+		right: 0;
 	}
 	#search-title {
 		margin: 0;
@@ -47,6 +46,14 @@
 		right: 0;
 		padding: 5px;
 		border: 1px dashed #4CAF50;
+	}
+	li {
+		display: inline-block;
+	}
+	.right {
+		right: 15px;
+		position: absolute;
+		background: white;
 	}
 	</style>
 	<script>
@@ -77,18 +84,27 @@
 	</script>
 </head>
 <body>
-	<h1>Simple Pastebin</h1>
+	<header>
+		<li>
+			<div>
+				<h1>Simple Pastebin</h1>
+			</div>
+		</li>
+
+		<li class="right">
+			<div id="search">
+				<p id="search-title">Search</p>
+				<input id='searchbox' type="text" value="ID">
+				<button onclick="search()" class="button">Search</button>
+		</div>
+	</li>
+</header>
 	<p>
 		To view pastes, simply go to this url plus <code>/&lt;pasteid&gt;</code>, <code>/&lt;pasteid&gt;.&lt;language name&gt;</code> for optional syntax highlighting, or <code>/&lt;pasteid&gt;.plain</code> for plaintext.<br/>
 		You can use the API by submitting a post request to this address. The response will be your URL.<br/>
 		Alternatively, you can use this handy-dandy editor:</p>
 	<textarea id="paste" wrap="soft"></textarea><br>
 	<button onClick="submit()" class="button"><b>Submit</b></button>
-
-	<div id="search">
-		<p id="search-title">Search</p><input id='searchbox' type="text" value="ID">
-		<button onclick="search()" class="button">Search</button>
-	</div>
 	<div class="footer">
 		Made by <a href="https://vvvland.ml">Victor Veytsman</a>. Host it yourself! <a href="https://github.com/vityavv/simple-paste"><img src="https://www.seeklogo.net/wp-content/uploads/2015/09/github-mark-logo.png" height="20px" style="margin-bottom: -2px;" border="0">
 	</div>
