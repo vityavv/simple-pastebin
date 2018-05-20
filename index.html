@@ -8,6 +8,7 @@
 	html, body {
 		width: 100%;
 		height: 100%;
+		margin: 0;
 	}
 	textarea {
 		font-family: monospace;
@@ -51,9 +52,13 @@
 		display: inline-block;
 	}
 	.right {
+		float: right;
+		position: relative;
 		right: 15px;
-		position: absolute;
 		background: white;
+	}
+	header {
+		width: 100%;
 	}
 	</style>
 	<script>
@@ -106,7 +111,7 @@
 	<textarea id="paste" wrap="soft"></textarea><br>
 	<button onClick="submit()" class="button"><b>Submit</b></button>
 	<div class="footer">
-		Made by <a href="https://vvvland.ml">Victor Veytsman</a>. Host it yourself! <a href="https://github.com/vityavv/simple-paste"><img src="https://www.seeklogo.net/wp-content/uploads/2015/09/github-mark-logo.png" height="20px" style="margin-bottom: -2px;" border="0">
+		Made by <a href="https://vvvland.ml">Victor Veytsman</a>. Host it yourself! <a href="https://github.com/vityavv/simple-pastebin"><img src="https://www.seeklogo.net/wp-content/uploads/2015/09/github-mark-logo.png" height="20px" style="margin-bottom: -2px;" border="0">
 	</div>
 </body>
 </html>
