@@ -11,6 +11,8 @@ let config = require("./config.json");
 //Create connection with and set up DB and HTTP server. Start interval that checks for expired pastes
 let db = new sqlite.Database(config.database || "./database.db");
 db.run("CREATE TABLE IF NOT EXISTS pastes (id TEXT UNIQUE PRIMARY KEY, data TEXT, created INTEGER)");
+//load index once so you don't have to load it over and over again
+let index = fs.readFileSync("./index.html");
 if (config.https) {
 	https.createServer({
 		key: fs.readFileSync(config.https.key || "./key.pem"),
@@ -24,11 +26,8 @@ function serverFunc(req, res) {
 	if (req.method === "GET") {
 		if (req.url === "/") {
 			//serve main page
-			fs.readFile("./index.html", (err, index) => {
-				if (err) throw err;
-				res.writeHead(200, {"Content-Type": "text/html"});
-				res.end(index);
-			});
+			res.writeHead(200, {"Content-Type": "text/html"});
+			res.end(index);
 		} else {
 			//get paste
 			db.get("SELECT data FROM pastes WHERE id = $id LIMIT 1", {$id: req.url.substring(1).split(".")[0]}, (err, paste) => {
