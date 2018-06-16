@@ -11,26 +11,24 @@ let config = require("./config.json");
 //Create connection with and set up DB and HTTP server. Start interval that checks for expired pastes
 let db = new sqlite.Database(config.database || "./database.db");
 db.run("CREATE TABLE IF NOT EXISTS pastes (id TEXT UNIQUE PRIMARY KEY, data TEXT, created INTEGER)");
-//read index page so that you don't have to read it every request (basically cache it)
-let indexfile = "You have found a bug! Please submit it at https://github.com/vityavv/simple-paste/issues";
-fs.readFile("./index.html", (err, index) => {
-	indexfile = index;
-	if (config.https) {
-		https.createServer({
-			key: fs.readFileSync(config.https.key || "./key.pem"),
-			cert: fs.readFileSync(config.https.cert || "./cert.pem")
-		}, serverFunc).listen(config.https.port || 443);
-	}
-	http.createServer(serverFunc).listen(config.http_port || 80);
-});
+if (config.https) {
+	https.createServer({
+		key: fs.readFileSync(config.https.key || "./key.pem"),
+		cert: fs.readFileSync(config.https.cert || "./cert.pem")
+	}, serverFunc).listen(config.https.port || 443);
+}
+http.createServer(serverFunc).listen(config.http_port || 80);
 if (config.expiry !== 0) setInterval(checkIfExpired, config.check || 3600000);
 
 function serverFunc(req, res) {
 	if (req.method === "GET") {
 		if (req.url === "/") {
 			//serve main page
-			res.writeHead(200, {"Content-Type": "text/html"});
-			res.end(indexfile);
+			fs.readFile("./index.html", (err, index) => {
+				if (err) throw err;
+				res.writeHead(200, {"Content-Type": "text/html"});
+				res.end(index);
+			});
 		} else {
 			//get paste
 			db.get("SELECT data FROM pastes WHERE id = $id LIMIT 1", {$id: req.url.substring(1).split(".")[0]}, (err, paste) => {
